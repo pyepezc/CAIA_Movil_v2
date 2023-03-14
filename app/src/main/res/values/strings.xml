@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">CAIA Movil v2.0</string>
+    <string name="version">1.00 marzo 2022</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">Usuario</string>
+    <string name="prompt_password">Clave</string>
+    <string name="prompt_guia">Guia</string>
+    <string name="prompt_ws">web service</string>
+    <string name="action_sign_in">OK</string>
+    <string name="action_test">Test</string>
+    <string name="action_impresora">Impresoras</string>
+    <string name="action_sign_in_short">OK</string>
+    <string name="welcome">"Bienvenido !"</string>
+    <string name="invalid_username">Usuario no valido!</string>
+    <string name="invalid_password">Clave incorrecta.</string>
+    <string name="login_failed">"Ingreso Fallido"</string>
+    <string name="Login_fragment_Titulo">DHL CAIA v2</string>
+    <string name="action_settings">Configuración</string>
+    <string name="version_label">Versión:</string>
+    <string name="switch_salida">Salida Aduana</string>
+    <string name="switch_impresion">Impresión Imágenes</string>
+
+    <string name="Guia_fragment_label">GUIA</string>
+    <string name="Config_fragment_label">Configuración</string>
+    <string name="previous">Anterior</string>
+
+    <string name="ws_test">http://localhost:8094/caia/EC/Servicios/ECMobileProcessNew.asmx</string>
+
+    <string name="error_url">Error en URL.</string>
+    <string name="ok">ok</string>
+    <string name="ok_impresoras">ok impresoras</string>
+    <string name="ws_no_responde">Web service no responde!</string>
+    <string name="bloquear_opciones">"Bloquear opciones!"</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+
+</resources>

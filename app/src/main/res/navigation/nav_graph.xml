@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/LoginFragment">
+
+    <fragment
+        android:id="@+id/LoginFragment"
+        android:name="com.example.caia_movil_v2.LoginFragment"
+        android:label="@string/Login_fragment_Titulo"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_LoginFragment_to_GuiaFragment"
+            app:destination="@id/GuiaFragment" />
+
+        <action
+            android:id="@+id/action_LoginFragment_to_ConfigFragment"
+            app:destination="@id/ConfigFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/GuiaFragment"
+        android:name="com.example.caia_movil_v2.GuiaFragment"
+        android:label="@string/Guia_fragment_label"
+        tools:layout="@layout/fragment_guia">
+
+        <action
+            android:id="@+id/action_GuiaFragment_to_LoginFragment"
+            app:destination="@id/LoginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ConfigFragment"
+        android:name="com.example.caia_movil_v2.ConfigFragment"
+        android:label="@string/Config_fragment_label"
+        tools:layout="@layout/fragment_config">
+
+        <action
+            android:id="@+id/action_ConfigFragment_to_LoginFragment"
+            app:destination="@id/LoginFragment" />
+    </fragment>
+
+</navigation>

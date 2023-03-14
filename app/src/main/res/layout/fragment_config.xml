@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dhl_500"
+    tools:context=".GuiaFragment">
+
+    <TextView
+        android:id="@+id/textWS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:singleLine="false"
+        android:text="Web Service:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/webservice"
+        style="@style/EditTextTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_horizontal_min"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:background="@drawable/custom_input"
+        android:hint="@string/prompt_ws"
+        android:inputType="textMultiLine"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:singleLine="false"
+        android:textCursorDrawable="@drawable/color_cursor"
+        android:textColorHighlight="@color/white"
+        android:text="@string/ws_test"
+        app:layout_constraintTop_toBottomOf="@id/textWS" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:background="@color/dhl_700"
+        app:layout_constraintTop_toBottomOf="@id/webservice" />
+
+
+    <LinearLayout
+        android:id="@+id/layout_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/divider1">
+
+        <Button
+            android:id="@+id/button_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_vertical_margin2"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:drawableLeft="@drawable/ic_test"
+            android:text="@string/action_test"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_min"
+            android:layout_marginEnd="@dimen/activity_horizontal_min"
+            android:singleLine="false" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:background="@color/dhl_700"
+        app:layout_constraintTop_toBottomOf="@id/layout_test" />
+
+    <TextView
+        android:id="@+id/textImpresoras"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:singleLine="false"
+        android:text="Impresoras"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/divider2" />
+
+    <Spinner
+        android:id="@+id/spin_impresoras"
+        style="@style/SpinnerTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_horizontal_min"
+        android:padding="@dimen/activity_vertical_min"
+        android:popupBackground="@color/dhl_200"
+        android:spinnerMode="dropdown"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textImpresoras" />
+
+    <Button
+        android:id="@+id/button_impresora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:drawableLeft="@drawable/ic_print"
+        android:text="@string/action_impresora"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spin_impresoras" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:background="@color/dhl_700"
+        app:layout_constraintTop_toBottomOf="@id/button_impresora" />
+
+    <TextView
+        android:id="@+id/textError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:singleLine="false"
+        android:text=""
+        app:layout_constraintTop_toBottomOf="@id/divider3" />
+
+
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
+        android:visibility="invisible"
+        android:indeterminate="true"
+        android:theme="@style/Theme.CAIA_Movil_v2.ProgressBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"  />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

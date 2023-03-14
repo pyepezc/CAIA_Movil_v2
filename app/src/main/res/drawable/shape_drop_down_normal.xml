@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <selector xmlns:android="http://schemas.android.com/apk/res/android">
+        <item>
+            <layer-list>
+                <item>
+                    <shape>
+                        <solid
+                            android:color="@color/dhl_200">
+                        </solid>
+                        <stroke android:color="@color/rojo_dhl_500" android:width="1dp"/>
+                        <corners android:radius="@dimen/activity_vertical_min" />
+                        <padding />
+                            android:bottom="@dimen/activity_vertical_min"
+                            android:left="@dimen/activity_horizontal_min"
+                            android:right="@dimen/activity_horizontal_min"
+                            android:top="@dimen/activity_vertical_min" />
+                    </shape>
+                </item>
+                <item android:drawable="@drawable/ic_drop_down"
+                    android:gravity="center_vertical|right"
+                    android:right="5dp"/>
+            </layer-list>
+        </item>
+    </selector>

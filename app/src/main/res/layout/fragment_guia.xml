@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dhl_500"
+    tools:context=".GuiaFragment"
+    tools:ignore="UseSwitchCompatOrMaterialXml">
+
+    <EditText
+        android:id="@+id/guia"
+        style="@style/EditTextTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_horizontal_margin2"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:background="@drawable/custom_input"
+        android:gravity="center_horizontal"
+        android:hint="@string/prompt_guia"
+        android:inputType="number"
+        android:maxLength="10"
+        android:padding="@dimen/activity_horizontal_min"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColorHighlight="@color/white"
+        android:textCursorDrawable="@drawable/color_cursor"
+        android:textSize="32sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <Button
+        android:id="@+id/botonRegistrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_vertical_min"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:text="@string/action_sign_in"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guia" />
+
+    <TextView
+        android:id="@+id/textMensaje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop= "@dimen/activity_vertical_min"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:background="@color/dhl_200"
+        android:padding="@dimen/activity_horizontal_min"
+        android:singleLine="false"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/botonRegistrar" />
+
+    <TextView
+        android:id="@+id/textError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:singleLine="false"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@id/divider" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dhl_700"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        app:layout_constraintBottom_toTopOf="@+id/bloqueoSwitch" />
+
+    <Switch
+        android:id="@+id/bloqueoSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:drawableStart="@drawable/ic_lock"
+        android:thumb="@drawable/custom_thumb"
+        android:track="@drawable/custom_track"
+        app:layout_constraintBottom_toTopOf="@+id/switches"
+        app:layout_constraintStart_toStartOf="@+id/textMensaje" />
+
+    <LinearLayout
+        android:id="@+id/switches"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:background="@drawable/custom_input"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+    <Switch
+        android:id="@+id/salidaSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:layout_marginBottom= "@dimen/activity_vertical_min"
+        android:text="@string/switch_salida"
+        android:textSize="20sp"
+        android:thumb="@drawable/custom_thumb"
+        android:track="@drawable/custom_track"
+/>
+
+    <Switch
+        android:id="@+id/impresionSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin2"
+        android:layout_marginTop="@dimen/activity_vertical_min"
+        android:layout_marginRight="@dimen/activity_horizontal_margin2"
+        android:layout_marginBottom="@dimen/activity_horizontal_min"
+        android:text="@string/switch_impresion"
+        android:textSize="20sp"
+        android:thumb="@drawable/custom_thumb"
+        android:track="@drawable/custom_track"
+ />
+
+    <TextView
+        android:id="@+id/impresoraText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_vertical_margin2"
+        android:layout_marginTop="@dimen/activity_vertical_min"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        />
+
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
+        android:theme="@style/Theme.CAIA_Movil_v2.ProgressBar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/botonRegistrar"
+        app:layout_constraintStart_toStartOf="@+id/botonRegistrar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

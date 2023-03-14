@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rojo_dhl_200">#FFF23A47</color>
+    <color name="rojo_dhl_500">#FFD40511</color>
+    <color name="rojo_dhl_700">#FFAD0B17</color>
+    <color name="dhl_200">#FFFFDD4F</color>
+    <color name="dhl_500">#FFFFCC00</color>
+    <color name="dhl_700">#FFDEB400</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparente">#00FFFFFF</color>
+</resources>
