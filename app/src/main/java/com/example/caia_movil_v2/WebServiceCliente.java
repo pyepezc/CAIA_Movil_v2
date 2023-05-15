@@ -23,7 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Esta clase administra las operaciones del WebService de CAIA de la App CAIA Movil v2
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
- * @version 1.0, 2022/03/07
+ * @version 2.0, 2023/05/14
  *
  * DHL EXPRESS ECUADOR
  */
@@ -54,7 +54,7 @@ public abstract class WebServiceCliente {
 
     private static boolean respuestaflag;
     private static String respuesta;
-    public static String mensajeError;
+    private static String mensajeError;
 
     public static boolean hayRespuesta() {
         return respuestaflag;
@@ -64,6 +64,7 @@ public abstract class WebServiceCliente {
         return respuesta;
     }
 
+    private static final int BUFFER_CAPACITY = 4096; // Denial of Service: StringBuilder
     /**
      * Seleccionar el URL
      *
@@ -111,13 +112,10 @@ public abstract class WebServiceCliente {
         respuestaflag = false;
         mensajeError = "";
 
-        String temp;
-        StringBuilder sb = new StringBuilder();
-
         try {
             // Conexion URL
-            URL url = new URL( getUrlS()+operacion );
-            setMensajeError(getUrlS()+operacion);
+            URL url = new URL( getUrlS() + operacion );
+            setMensajeError( getUrlS() + operacion);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -144,15 +142,17 @@ public abstract class WebServiceCliente {
                 /// Obtener el flujo de datos devuelto por la solicitud de conexión actual
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-                while (null != (temp = reader.readLine())) {
-                    sb.append(temp);
+                char charData[] = new char[ BUFFER_CAPACITY ];
+                int i = 0, c=0;
+                while( (c = reader.read()) != -1 && i < BUFFER_CAPACITY) {
+                    char character = (char) c;
+                    charData[i++] = character;
                 }
-
-                Log.d(TAG, sb.toString());
                 reader.close();
 
-                respuesta = parseXml(sb.toString());
+                respuesta = parseXml( new String(charData) );
                 respuestaflag = true; //WebService respondio correctamente.
+                os.close();
                 connection.disconnect();
                 return true;
 
@@ -168,7 +168,7 @@ public abstract class WebServiceCliente {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+
             //Log.e(TAG, e.getMessage());
             //mensajeError = e.getMessage();
             setMensajeError( e.getMessage() );
@@ -211,7 +211,6 @@ public abstract class WebServiceCliente {
             setUrl(urls);
 
         } catch (MalformedURLException e) {
-            e.printStackTrace();
             alerta(contexto.getString(R.string.error_url), e.getMessage(), contexto);
         }
         // in the EditTexts
@@ -327,14 +326,7 @@ public abstract class WebServiceCliente {
                 parametros = "ShipmentCode=" + datoA + "&IdImpresora="+ datoB.substring(0,ind); // Tomar solo el codigo.
         }
 
-        String soapXML = getCabecera();
-        soapXML += "<dhl:" + metodo + ">";
-        soapXML += parametros;
-        soapXML += "</dhl:" + metodo + ">";
-        soapXML += "</soapenv:Body>" +
-                "</soapenv:Envelope>";
-        soapXML = parametros;
-        return soapXML;
+        return parametros;
     }
 
     private static String getOper( int tipo ) {
@@ -427,5 +419,9 @@ public abstract class WebServiceCliente {
     public static void setMensajeError(String m) {
         //mensajeError += m+" | ";
         mensajeError = ""; // Quitar para hacer pruebas
+    }
+
+    public static String getMensajeError() {
+        return mensajeError;
     }
 }

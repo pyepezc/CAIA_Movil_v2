@@ -149,7 +149,7 @@ public class LoginFragment extends Fragment {
                     }
                     else
                         respuesta = null;
-                    binding.textError.setText(WebServiceCliente.mensajeError);
+                    binding.textError.setText(WebServiceCliente.getMensajeError());
 
                     mHandler.sendEmptyMessage(postLOGIN);  // Apagar progressbar
                 }

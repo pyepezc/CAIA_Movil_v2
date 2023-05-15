@@ -119,7 +119,7 @@ public class ConfigFragment extends Fragment {
                 WebServiceCliente.savePreferences(getContext());
 
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 //Log.e(TAG, urlS);
                 return; // No es correcto el url
             }
@@ -184,11 +184,11 @@ public class ConfigFragment extends Fragment {
 
                     if (WebServiceCliente.hayRespuesta()) {
                         binding.textTest.setText(WebServiceCliente.getRespuesta());
-                        binding.textError.setText(WebServiceCliente.mensajeError);
+                        binding.textError.setText(WebServiceCliente.getMensajeError());
                     }
                     else {
                         binding.textTest.setText(R.string.ws_no_responde);
-                        binding.textError.setText( WebServiceCliente.mensajeError);
+                        binding.textError.setText( WebServiceCliente.getMensajeError());
                     }
 
                     mHandler.sendEmptyMessage(postSTATUS);  // Apagar progressbar

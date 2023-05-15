@@ -242,7 +242,7 @@ public class GuiaFragment extends Fragment {
                     } else
                         respuesta = null;
 
-                    binding.textError.setText(WebServiceCliente.mensajeError);
+                    binding.textError.setText(WebServiceCliente.getMensajeError() );
 
                     mHandler.sendEmptyMessage(postSALIDA);  // Apagar progressbar
                 }
@@ -268,7 +268,7 @@ public class GuiaFragment extends Fragment {
 
                     String texto = textMensaje.getText() + ((respuesta==null) ? "" : respuesta);
                     textMensaje.setText(texto); // Actualizar mensaje.
-                    binding.textError.setText(WebServiceCliente.mensajeError);
+                    binding.textError.setText(WebServiceCliente.getMensajeError());
 
                     mHandler.sendEmptyMessage(postIMPRESION);  // Apagar progressbar
                 }
