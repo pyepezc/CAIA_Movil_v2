@@ -1,12 +1,15 @@
 package com.example.caia_movil_v2;
-/**
+/*
  * Esta es la clase base que sostiene a las otras pantallas(fragmentos) de la App CAIA Movil v2
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
  * @version 1.0, 2022/03/07
+ * @version 1.1, 2023/05/17
  *
  * DHL EXPRESS ECUADOR
  */
+
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,20 +20,30 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.caia_movil_v2.databinding.ActivityMainBinding;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.security.ProviderInstaller;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements ProviderInstaller.ProviderInstallListener {
 
     private AppBarConfiguration appBarConfiguration;
-    private ActivityMainBinding binding;
+
 
     public Menu menuGlobal; // Para acceder desde Configfragment y guiaFragment.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        ActivityMainBinding binding;
+
         super.onCreate(savedInstanceState);
+
+        ProviderInstaller.installIfNeededAsync(this, this);//Install Google service security provider
+        Log.d("DHL", "installIfNeededAsync ");
 
         binding = ActivityMainBinding.inflate( getLayoutInflater() );
         setContentView(binding.getRoot());
@@ -75,5 +88,43 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    /*
+        Google Play services provides. Security Provider
+    */
+    private static final int ERROR_DIALOG_REQUEST_CODE = 1;
+
+    //private boolean retryProviderInstall;
+
+    @Override
+    public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+        GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+        int status_code = availability.isGooglePlayServicesAvailable(this);
+        Log.d("DHL", "onProviderInstallFailed "+status_code);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ERROR_DIALOG_REQUEST_CODE) {
+            // Adding a fragment via GoogleApiAvailability.showErrorDialogFragment
+            // before the instance state is restored throws an error. So instead,
+            // set a flag here, which causes the fragment to delay until
+            // onPostResume.
+            Log.d("DHL", "onActivityResult "+ERROR_DIALOG_REQUEST_CODE);
+            //retryProviderInstall = true;
+        }
+    }
+
+    @Override
+    public void onProviderInstalled() {
+        // Provider is up to date; app can make secure network calls.
+        //Log.d("DHL", "onProviderInstalled ");
+    }
+
+    //private void onProviderInstallerNotAvailable() {
+        // provider can't be updated .
+    //}
 
 }
