@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -17,9 +16,8 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.*;
 
-import javax.net.ssl.HttpsURLConnection;
 
-/**
+/*
  * Esta clase administra las operaciones del WebService de CAIA de la App CAIA Movil v2
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
@@ -38,7 +36,6 @@ public abstract class WebServiceCliente {
     private static final int SALIDAADUANAS = 4;
     private static final int IMPRIMIRIMAGENESGUIA = 5;
 
-    private static final String TAG = "DHL";
     private static final String NOMBREPREFERENCIAS = "CAIAPref";
     private static final String URLDEFAULT = "https://ec-caia.dhl.com/caia/EC/Servicios/ECMobileProcessNew.asmx";
 
@@ -143,7 +140,7 @@ public abstract class WebServiceCliente {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
                 char charData[] = new char[ BUFFER_CAPACITY ];
-                int i = 0, c=0;
+                int i = 0, c;
                 while( (c = reader.read()) != -1 && i < BUFFER_CAPACITY) {
                     char character = (char) c;
                     charData[i++] = character;
@@ -157,7 +154,6 @@ public abstract class WebServiceCliente {
                 return true;
 
             } else {
-                //Log.d(TAG, "No responde ");
                 //Log.e(TAG, connection.getResponseMessage() );
                 respuestaflag = false;
                 setMensajeError(responseCode + connection.getResponseMessage());
@@ -170,7 +166,6 @@ public abstract class WebServiceCliente {
         } catch (IOException e) {
 
             //Log.e(TAG, e.getMessage());
-            //mensajeError = e.getMessage();
             setMensajeError( e.getMessage() );
             return false;
         }
@@ -361,10 +356,9 @@ public abstract class WebServiceCliente {
      * @return la cabecera
      */
     private static String getCabecera() {
-        String soapXML = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">\n" +
+        return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" ;
-        return soapXML;
     }
 
     /**

@@ -1,5 +1,5 @@
 package com.example.caia_movil_v2;
-/**
+/*
  * Esta clase muestra la pantalla de Configuracion de la App CAIA Movil v2
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -53,8 +52,6 @@ public class ConfigFragment extends Fragment {
     private ProgressBar progBar;
     private Spinner spinPrt;
     private Handler mHandler;
-    //private TextView textError;
-    private WebView webview;
 
     private FragmentConfigBinding binding;
 
@@ -85,7 +82,7 @@ public class ConfigFragment extends Fragment {
         spinPrt = binding.spinImpresoras;
         //textError = binding.textError;
 
-        webview = binding.webview;
+        WebView webview = binding.webview;
 
         webview.loadUrl(WebServiceCliente.getUrlS());
 
@@ -119,7 +116,6 @@ public class ConfigFragment extends Fragment {
                 WebServiceCliente.savePreferences(getContext());
 
             } catch (MalformedURLException e) {
-                //e.printStackTrace();
                 //Log.e(TAG, urlS);
                 return; // No es correcto el url
             }

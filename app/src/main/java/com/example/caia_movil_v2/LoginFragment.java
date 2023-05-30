@@ -1,5 +1,5 @@
 package com.example.caia_movil_v2;
-/**
+/*
  * Esta clase muestra la pantalla de ingreso a la App CAIA Movil v2 (Login)
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ public class LoginFragment extends Fragment {
     /**
      * Constantes
      */
-    private static final String TAG = "DHL";
 
     private static final int preLOGIN = 1001;
     private static final int codLOGIN = 1005;
@@ -48,7 +46,6 @@ public class LoginFragment extends Fragment {
     private ProgressBar progBar;
     private EditText usuarioTxt;
     private EditText passwordTxt;
-    private WebView webview;
 
     private String usuario;
     private String password;
@@ -78,7 +75,7 @@ public class LoginFragment extends Fragment {
         progBar = binding.loading;
         usuarioTxt = binding.username;
         passwordTxt = binding.password;
-        webview = binding.webview;
+        WebView webview = binding.webview;
 
         webview.loadUrl(WebServiceCliente.getUrlS());
 

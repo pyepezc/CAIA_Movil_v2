@@ -1,5 +1,5 @@
 package com.example.caia_movil_v2;
-/**
+/*
  * Esta clase muestra la pantalla de Captura de Guias de la App CAIA Movil v2
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
@@ -37,7 +37,6 @@ public class GuiaFragment extends Fragment {
     /**
      * Constantes
      */
-    private static final String TAG = "DHL";
 
     private static final int preSALIDA = 1001;
     private static final int codSALIDA = 1005;
