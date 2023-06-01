@@ -4,7 +4,8 @@ package com.example.caia_movil_v2;
  *
  * @author Pablo Yepez Contreras <http://mailto:pyepezc@yahoo.com>
  * @version 1.0, 2022/03/07
- * @version 1.1, 2023/05/17
+ * @version 2.01, 2023/05/17
+ * @version 2.02, 2023/06/02
  *
  * DHL EXPRESS ECUADOR
  */
@@ -20,18 +21,21 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.caia_movil_v2.databinding.ActivityMainBinding;
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
-    implements ProviderInstaller.ProviderInstallListener {
+        implements ProviderInstaller.ProviderInstallListener  {
 
     private AppBarConfiguration appBarConfiguration;
 
+    private static final String TAG = "DHL";
 
     public Menu menuGlobal; // Para acceder desde Configfragment y guiaFragment.
 
@@ -42,8 +46,16 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
 
-        ProviderInstaller.installIfNeededAsync(this, this);//Install Google service security provider
-        Log.d("DHL", "installIfNeededAsync ");
+        try {
+            ProviderInstaller.installIfNeeded(this);
+            Log.d(TAG, "installIfNeeded ");
+        } catch (GooglePlayServicesRepairableException e) {
+            Log.d(TAG, "Repairable:"+e.getMessage());
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.d(TAG, "NotAvailable:"+e.getMessage());
+        }
+
+        //ProviderInstaller.installIfNeededAsync(this, this);//Install Google service security provider
 
         binding = ActivityMainBinding.inflate( getLayoutInflater() );
         setContentView(binding.getRoot());
@@ -92,9 +104,8 @@ public class MainActivity extends AppCompatActivity
     /*
         Google Play services provides. Security Provider
     */
-    private static final int ERROR_DIALOG_REQUEST_CODE = 1;
 
-    //private boolean retryProviderInstall;
+    private static final int ERROR_DIALOG_REQUEST_CODE = 1;
 
     @Override
     public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
@@ -120,11 +131,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onProviderInstalled() {
         // Provider is up to date; app can make secure network calls.
-        //Log.d("DHL", "onProviderInstalled ");
+        Log.d("DHL", "onProviderInstalled ");
     }
-
-    //private void onProviderInstallerNotAvailable() {
-        // provider can't be updated .
-    //}
 
 }

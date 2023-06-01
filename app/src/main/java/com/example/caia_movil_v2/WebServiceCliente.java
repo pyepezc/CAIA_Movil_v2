@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -30,6 +31,7 @@ public abstract class WebServiceCliente {
     /**
      * Constantes
      */
+    private static final String TAG = "DHL";
     private static final int HELLOWORLD = 1;
     private static final int LOGONUSER = 2;
     private static final int OBTENERIMPRESORASLABEL = 3;
@@ -42,7 +44,6 @@ public abstract class WebServiceCliente {
     /**
      * Atributos
      */
-    private static URL url; // Direccion url para conectarse al WebService.
     private static String urlS = URLDEFAULT; // String con la direccion del url.
     private static String impresoraActual; // String con el nombre de la impresora seleccionada.
     private static String usuario; // Usuario con ql que se hizo login.
@@ -69,7 +70,7 @@ public abstract class WebServiceCliente {
      */
     public static void setUrl(@NonNull String u) throws MalformedURLException {
         urlS = u.trim();
-        url = new URL(urlS);
+        //url = new URL(urlS);
     }
 
     public static String getUrlS() {
@@ -104,10 +105,15 @@ public abstract class WebServiceCliente {
         impresionImagenes = activo;
     }
 
-    private static boolean conectar(String mensajeS, String operacion) {
+    private static void conectar(String mensajeS, String operacion) {
+
         respuesta = "";
         respuestaflag = false;
         mensajeError = "";
+
+        OutputStream os = null;
+        BufferedReader reader = null;
+        InputStreamReader inputRead = null;
 
         try {
             // Conexion URL
@@ -128,8 +134,12 @@ public abstract class WebServiceCliente {
             setMensajeError(mensajeS);
 
             /// Enviar la información en una secuencia
-            OutputStream os = connection.getOutputStream();
-            os.write(mensajeS.getBytes());
+            os = connection.getOutputStream();
+            if (mensajeS.charAt(0)!='~')
+                os.write(mensajeS.getBytes());
+            else {
+                os.write( desvariar(mensajeS.substring(1)).getBytes());
+            }
 
             // El quinto paso: recibir la respuesta del servidor e imprimir
             int responseCode = connection.getResponseCode();
@@ -137,38 +147,61 @@ public abstract class WebServiceCliente {
                 //Log.d(TAG, "Si responde ");
 
                 /// Obtener el flujo de datos devuelto por la solicitud de conexión actual
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                inputRead = new InputStreamReader( connection.getInputStream() );
+                reader = new BufferedReader( inputRead );
 
-                char charData[] = new char[ BUFFER_CAPACITY ];
+                char[] charData = new char[ BUFFER_CAPACITY ];
                 int i = 0, c;
                 while( (c = reader.read()) != -1 && i < BUFFER_CAPACITY) {
                     char character = (char) c;
                     charData[i++] = character;
                 }
-                reader.close();
 
                 respuesta = parseXml( new String(charData) );
                 respuestaflag = true; //WebService respondio correctamente.
-                os.close();
-                connection.disconnect();
-                return true;
 
             } else {
                 //Log.e(TAG, connection.getResponseMessage() );
                 respuestaflag = false;
                 setMensajeError(responseCode + connection.getResponseMessage());
                 //mensajeError = responseCode + connection.getResponseMessage();
-                os.close();
-                connection.disconnect();
-                return false;
+
             }
+            // Al final desconectar 30 mayo 2023
+            connection.disconnect();
 
         } catch (IOException e) {
-
             //Log.e(TAG, e.getMessage());
             setMensajeError( e.getMessage() );
-            return false;
+
+        } finally {
+            //close streams
+            if (os != null) {
+                try {
+                    os.close();
+                }
+                catch(IOException ioex) {
+                    Log.e(TAG, ioex.getMessage() );
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                }
+                catch(IOException ioex) {
+                    Log.e(TAG, ioex.getMessage() );
+                }
+            }
+            if (inputRead != null) {
+                try {
+                    inputRead.close();
+                }
+                catch (IOException ioex) {
+                    Log.e(TAG, ioex.getMessage() );
+                }
+            }
         }
+
     }
 
     /**
@@ -246,7 +279,7 @@ public abstract class WebServiceCliente {
     public static void LogonUser(String usuario, String passwd) {
         respuesta = "";
         respuestaflag = false;
-        String mensaje = getXML(LOGONUSER, usuario, passwd);
+        String mensaje = getXML(LOGONUSER, variar(usuario), variar(passwd) );
         String operacion = getOper(LOGONUSER);
         new Thread(() -> conectar(mensaje, operacion)).start();
     }
@@ -293,30 +326,30 @@ public abstract class WebServiceCliente {
      * @return el texto POST construido
      */
     private static String getXML(int tipo, String datoA, String datoB, String datoC) {
-        String metodo = "", parametros = "";
+        String parametros = "";
 
         switch (tipo) {
             case HELLOWORLD:
-                metodo = "HelloWorld";
+                //Web service method = "HelloWorld";
                 break;
 
             case LOGONUSER:
-                metodo = "LogonUser";
-                parametros = "user=" + datoA + "&pass="+ datoB;
+                //Web service method = "LogonUser";
+                parametros = "~"+variar("user=" + desvariar(datoA) + "&pass="+ desvariar(datoB) );
                 break;
 
             case OBTENERIMPRESORASLABEL:
-                metodo = "ObtenerImpresorasLabel";
+                //Web service method = "ObtenerImpresorasLabel";
                 break;
 
             case SALIDAADUANAS:
-                metodo = "SalidaAduanas";
+                //Web service method = "SalidaAduanas";
                 int indx = datoC.indexOf(';');
                 parametros = "idUsuario=" + datoA + "&shipmentCode="+ datoB + "&idImpresora="+ datoC.substring(0,indx); // Tomar solo el codigo.
                 break;
 
             case IMPRIMIRIMAGENESGUIA:
-                metodo = "ImprimirImagenesGuia";
+                //Web service method = "ImprimirImagenesGuia";
                 int ind = datoB.indexOf(';');
                 parametros = "ShipmentCode=" + datoA + "&IdImpresora="+ datoB.substring(0,ind); // Tomar solo el codigo.
         }
@@ -349,16 +382,6 @@ public abstract class WebServiceCliente {
         }
 
         return String.format("/%s",metodo);
-    }
-
-    /**
-     * Obtiene la cabecera del requerimiento
-     * @return la cabecera
-     */
-    private static String getCabecera() {
-        return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tem=\"http://tempuri.org/\">\n" +
-                "   <soapenv:Header/>\n" +
-                "   <soapenv:Body>\n" ;
     }
 
     /**
@@ -412,10 +435,32 @@ public abstract class WebServiceCliente {
 
     public static void setMensajeError(String m) {
         //mensajeError += m+" | ";
-        mensajeError = ""; // Quitar para hacer pruebas
+        mensajeError = m; // Quitar para hacer pruebas
     }
 
     public static String getMensajeError() {
         return mensajeError;
+    }
+
+    private static String variar(String s) {
+        char[] ori = s.toCharArray();
+        int l = ori.length;
+        char[] zif = new char[l];
+
+        for (int i=0; i<l; i++)
+            zif[i] = (char)( 126 - ( (int)ori[i] - 32) );
+
+        return new String(zif);
+    }
+
+    private static String desvariar(String s) {
+        char[] ori = s.toCharArray();
+        int l = ori.length;
+        char[] zif = new char[l];
+
+        for (int i=0; i<l; i++)
+            zif[i] = (char)( 126 - (int)ori[i] + 32 );
+
+        return new String(zif);
     }
 }
