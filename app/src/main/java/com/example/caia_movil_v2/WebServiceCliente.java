@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.*;
+import java.security.cert.CertPathValidatorException;
 
 
 /*
@@ -117,8 +118,8 @@ public abstract class WebServiceCliente {
 
         try {
             // Conexion URL
-            URL url = new URL( getUrlS() + operacion );
-            setMensajeError( getUrlS() + operacion);
+            URL url = new URL(getUrlS() + operacion);
+            setMensajeError(getUrlS() + operacion);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -135,10 +136,10 @@ public abstract class WebServiceCliente {
 
             /// Enviar la información en una secuencia
             os = connection.getOutputStream();
-            if (mensajeS.charAt(0)!='~')
+            if (mensajeS.charAt(0) != '~')
                 os.write(mensajeS.getBytes());
             else {
-                os.write( desvariar(mensajeS.substring(1)).getBytes());
+                os.write(desvariar(mensajeS.substring(1)).getBytes());
             }
 
             // El quinto paso: recibir la respuesta del servidor e imprimir
@@ -147,17 +148,17 @@ public abstract class WebServiceCliente {
                 //Log.d(TAG, "Si responde ");
 
                 /// Obtener el flujo de datos devuelto por la solicitud de conexión actual
-                inputRead = new InputStreamReader( connection.getInputStream() );
-                reader = new BufferedReader( inputRead );
+                inputRead = new InputStreamReader(connection.getInputStream());
+                reader = new BufferedReader(inputRead);
 
-                char[] charData = new char[ BUFFER_CAPACITY ];
+                char[] charData = new char[BUFFER_CAPACITY];
                 int i = 0, c;
-                while( (c = reader.read()) != -1 && i < BUFFER_CAPACITY) {
+                while ((c = reader.read()) != -1 && i < BUFFER_CAPACITY) {
                     char character = (char) c;
                     charData[i++] = character;
                 }
 
-                respuesta = parseXml( new String(charData) );
+                respuesta = parseXml(new String(charData));
                 respuestaflag = true; //WebService respondio correctamente.
 
             } else {
@@ -170,9 +171,9 @@ public abstract class WebServiceCliente {
             // Al final desconectar 30 mayo 2023
             connection.disconnect();
 
-        } catch (IOException e) {
-            //Log.e(TAG, e.getMessage());
-            setMensajeError( e.getMessage() );
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            setMensajeError(e.getMessage());
 
         } finally {
             //close streams
