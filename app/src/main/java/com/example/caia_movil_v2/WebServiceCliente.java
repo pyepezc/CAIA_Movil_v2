@@ -131,15 +131,17 @@ public abstract class WebServiceCliente {
             setMensajeError("Conectado.");
 
             // El cuarto paso: organizar datosy enviar solicitud
-            //Log.d(TAG, mensajeS);
-            setMensajeError(mensajeS);
+            if ( !operacion.contains("LogonUser") )
+                setMensajeError(mensajeS);
 
             /// Enviar la información en una secuencia
             os = connection.getOutputStream();
-            if (mensajeS.charAt(0) != '~')
-                os.write(mensajeS.getBytes());
-            else {
-                os.write(desvariar(mensajeS.substring(1)).getBytes());
+            if (mensajeS.length()>0) {
+                if (mensajeS.charAt(0) != '~')
+                    os.write(mensajeS.getBytes());
+                else {
+                    os.write(desvariar(mensajeS.substring(1)).getBytes());
+                }
             }
 
             // El quinto paso: recibir la respuesta del servidor e imprimir
