@@ -140,6 +140,7 @@ public abstract class WebServiceCliente {
                 if (mensajeS.charAt(0) != '~')
                     os.write(mensajeS.getBytes());
                 else {
+                    //Log.d(TAG, desvariar(mensajeS.substring(1)));
                     os.write(desvariar(mensajeS.substring(1)).getBytes());
                 }
             }
@@ -147,7 +148,7 @@ public abstract class WebServiceCliente {
             // El quinto paso: recibir la respuesta del servidor e imprimir
             int responseCode = connection.getResponseCode();
             if (200 == responseCode) {// indica que el servidor respondió con éxito
-                //Log.d(TAG, "Si responde ");
+
 
                 /// Obtener el flujo de datos devuelto por la solicitud de conexión actual
                 inputRead = new InputStreamReader(connection.getInputStream());
@@ -160,8 +161,10 @@ public abstract class WebServiceCliente {
                     charData[i++] = character;
                 }
 
+                //Log.d(TAG, new String(charData) );
                 respuesta = parseXml(new String(charData));
                 respuestaflag = true; //WebService respondio correctamente.
+                setMensajeError(""); //junio 14
 
             } else {
                 //Log.e(TAG, connection.getResponseMessage() );
@@ -347,13 +350,15 @@ public abstract class WebServiceCliente {
 
             case SALIDAADUANAS:
                 //Web service method = "SalidaAduanas";
-                int indx = datoC.indexOf(';');
+                int indx = datoC.indexOf(';'); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
+                if (indx<0) indx = 0;
                 parametros = "idUsuario=" + datoA + "&shipmentCode="+ datoB + "&idImpresora="+ datoC.substring(0,indx); // Tomar solo el codigo.
                 break;
 
             case IMPRIMIRIMAGENESGUIA:
                 //Web service method = "ImprimirImagenesGuia";
                 int ind = datoB.indexOf(';');
+                if (ind<0) ind = 0;
                 parametros = "ShipmentCode=" + datoA + "&IdImpresora="+ datoB.substring(0,ind); // Tomar solo el codigo.
         }
 
