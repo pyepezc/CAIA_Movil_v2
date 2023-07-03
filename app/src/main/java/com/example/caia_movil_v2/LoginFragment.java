@@ -36,7 +36,6 @@ public class LoginFragment extends Fragment {
      * Constantes
      */
     private static final String TAG = "DHL";
-    private static final int testSTATUS = 0;
     private static final int preLOGIN = 1001;
     private static final int codLOGIN = 1005;
     private static final int postLOGIN = 1010;
@@ -73,7 +72,6 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Test handle operaciones
-        handleOperaciones(testSTATUS);
 
         binding.fecha.setText( getFecha() );
 
@@ -120,11 +118,6 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleOperaciones(int control) {
-
-        if (control == testSTATUS) {
-            Log.d(TAG, "ok ");
-            return;
-        }
 
         mHandler = new Handler(Looper.getMainLooper()) {
             String respuesta=null;

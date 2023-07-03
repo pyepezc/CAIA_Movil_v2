@@ -16,7 +16,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.cert.CertPathValidatorException;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 
 /*
@@ -40,7 +45,7 @@ public abstract class WebServiceCliente {
     private static final int IMPRIMIRIMAGENESGUIA = 5;
 
     private static final String NOMBREPREFERENCIAS = "CAIAPref";
-    private static final String URLDEFAULT = "https://ec-caia.dhl.com/caia/EC/Servicios/ECMobileProcessNew.asmx";
+    private static final String URLDEFAULT = "https://";
 
     /**
      * Atributos
@@ -64,6 +69,7 @@ public abstract class WebServiceCliente {
     }
 
     private static final int BUFFER_CAPACITY = 4096; // Denial of Service: StringBuilder
+
     /**
      * Seleccionar el URL
      *
@@ -106,7 +112,7 @@ public abstract class WebServiceCliente {
         impresionImagenes = activo;
     }
 
-    private static void conectar(String mensajeS, String operacion) {
+    private static void conectar(char [] mensajeS, String operacion) {
 
         respuesta = "";
         respuestaflag = false;
@@ -131,19 +137,21 @@ public abstract class WebServiceCliente {
             setMensajeError("Conectado.");
 
             // El cuarto paso: organizar datosy enviar solicitud
-            if ( !operacion.contains("LogonUser") )
-                setMensajeError(mensajeS);
+            if (mensajeS!=null && !operacion.contains("LogonUser"))
+                setMensajeError(new String(mensajeS) );
 
             /// Enviar la información en una secuencia
             os = connection.getOutputStream();
-            if (mensajeS.length()>0) {
-                if (mensajeS.charAt(0) != '~')
-                    os.write(mensajeS.getBytes());
+            if (mensajeS!=null && mensajeS.length > 0) {
+                if (mensajeS[0] != '~')
+                    os.write( toBytes(mensajeS) );
                 else {
                     //Log.d(TAG, desvariar(mensajeS.substring(1)));
-                    os.write(desvariar(mensajeS.substring(1)).getBytes());
+                    mensajeS[0] = 0;
+                    byte[] bb= toBytes(desvariar(mensajeS));
+                    os.write( bb );
                 }
-            }
+            } else Log.e(TAG, "NULLLLL" );
 
             // El quinto paso: recibir la respuesta del servidor e imprimir
             int responseCode = connection.getResponseCode();
@@ -161,7 +169,6 @@ public abstract class WebServiceCliente {
                     charData[i++] = character;
                 }
 
-                //Log.d(TAG, new String(charData) );
                 respuesta = parseXml(new String(charData));
                 respuestaflag = true; //WebService respondio correctamente.
                 setMensajeError(""); //junio 14
@@ -170,40 +177,39 @@ public abstract class WebServiceCliente {
                 //Log.e(TAG, connection.getResponseMessage() );
                 respuestaflag = false;
                 setMensajeError(responseCode + connection.getResponseMessage());
-                //mensajeError = responseCode + connection.getResponseMessage();
 
             }
             // Al final desconectar 30 mayo 2023
             connection.disconnect();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             setMensajeError(e.getMessage());
 
         } finally {
+            if (mensajeS!=null)
+                Arrays.fill(mensajeS, ' ');
+
             //close streams
             if (os != null) {
                 try {
                     os.close();
-                }
-                catch(IOException ioex) {
-                    Log.e(TAG, ioex.getMessage() );
+                } catch (IOException ioex) {
+                    Log.e(TAG, ioex.getMessage());
                 }
             }
             if (reader != null) {
                 try {
                     reader.close();
-                }
-                catch(IOException ioex) {
-                    Log.e(TAG, ioex.getMessage() );
+                } catch (IOException ioex) {
+                    Log.e(TAG, ioex.getMessage());
                 }
             }
             if (inputRead != null) {
                 try {
                     inputRead.close();
-                }
-                catch (IOException ioex) {
-                    Log.e(TAG, ioex.getMessage() );
+                } catch (IOException ioex) {
+                    Log.e(TAG, ioex.getMessage());
                 }
             }
         }
@@ -212,6 +218,7 @@ public abstract class WebServiceCliente {
 
     /**
      * Almacena los datos de la aplicacion con preferencias en un archivo "CAIAPref" en private mode
+     *
      * @param contexto de la aplicacion
      */
     public static void savePreferences(Context contexto) {
@@ -230,6 +237,7 @@ public abstract class WebServiceCliente {
 
     /**
      * Recupera los datos de la aplicacion desde las  preferencias
+     *
      * @param contexto de la aplicacion
      */
     public static void getPreferences(Context contexto) {
@@ -259,7 +267,7 @@ public abstract class WebServiceCliente {
         respuestaflag = false;
 
         //Log.d(TAG, "HelloWorld");
-        String mensaje = getXML(HELLOWORLD);
+        char[] mensaje = getXML(HELLOWORLD);
         String operacion = getOper(HELLOWORLD);
         new Thread(() -> conectar(mensaje, operacion)).start();
 
@@ -271,7 +279,7 @@ public abstract class WebServiceCliente {
     public static void ObtenerImpresorasLabel() {
         respuesta = "";
         respuestaflag = false;
-        String mensaje = getXML(OBTENERIMPRESORASLABEL);
+        char[] mensaje = getXML(OBTENERIMPRESORASLABEL);
         String operacion = getOper(OBTENERIMPRESORASLABEL);
         new Thread(() -> conectar(mensaje, operacion)).start();
     }
@@ -280,59 +288,63 @@ public abstract class WebServiceCliente {
      * Se invoca a la operacion LogonUser del webService
      *
      * @param usuario nombre del usuario
-     * @param passwd contrasenia
+     * @param passwd  contrasenia
      */
     public static void LogonUser(String usuario, String passwd) {
         respuesta = "";
         respuestaflag = false;
-        String mensaje = getXML(LOGONUSER, variar(usuario), variar(passwd) );
+        char[] mensaje = getXML(LOGONUSER, variar(usuario), variar(passwd));
         String operacion = getOper(LOGONUSER);
         new Thread(() -> conectar(mensaje, operacion)).start();
     }
 
     /**
      * Se invoca a la operacion SalidaAduanas del webService
+     *
      * @param guia numero de la guia
      */
     public static void SalidaAduanas(String guia) {
         respuesta = "";
         respuestaflag = false;
-        String mensaje = getXML(SALIDAADUANAS, usuario, guia, impresoraActual);
+        char[] mensaje = getXML(SALIDAADUANAS, usuario.toCharArray(), guia.toCharArray(), impresoraActual.toCharArray());
         String operacion = getOper(SALIDAADUANAS);
         new Thread(() -> conectar(mensaje, operacion)).start();
     }
 
     /**
      * Se invoca a la operacion ImprimirImagenesGuia del webService
+     *
      * @param guia numero de la guia
      */
     public static void ImprimirImagenesGuia(String guia) {
 
         respuesta = "";
         respuestaflag = false;
-        String mensaje = getXML(IMPRIMIRIMAGENESGUIA, guia, impresoraActual);
+        char[] mensaje = getXML(IMPRIMIRIMAGENESGUIA, guia.toCharArray(), impresoraActual.toCharArray());
         String operacion = getOper(IMPRIMIRIMAGENESGUIA);
         new Thread(() -> conectar(mensaje, operacion)).start();
     }
 
-    private static String getXML(int tipo) {
-        return getXML(tipo, "", "", "");
+    private static char[] getXML(int tipo) {
+        return getXML(tipo, null, null, null);
     }
 
-    private static String getXML(int tipo, String datoA, String datoB) {
-        return getXML(tipo, datoA, datoB, "");
+    private static char[] getXML(int tipo, char[] datoA, char[] datoB) {
+        return getXML(tipo, datoA, datoB, null);
     }
 
     /**
      * Construye el string de invocacion POST dependiendo de cada  operacion
-     * @param tipo de operacion
+     *
+     * @param tipo  de operacion
      * @param datoA parametro 1
      * @param datoB parametro 2
      * @param datoC parametro 3
      * @return el texto POST construido
      */
-    private static String getXML(int tipo, String datoA, String datoB, String datoC) {
+    private static char[] getXML(int tipo, char[] datoA, char[] datoB, char[] datoC) {
         String parametros = "";
+        char[] param=null;
 
         switch (tipo) {
             case HELLOWORLD:
@@ -341,7 +353,10 @@ public abstract class WebServiceCliente {
 
             case LOGONUSER:
                 //Web service method = "LogonUser";
-                parametros = "~"+variar("user=" + desvariar(datoA) + "&pass="+ desvariar(datoB) );
+                String p = new String( appendCh(
+                            appendCh( "user=".toCharArray(), desvariar(datoA)),
+                            appendCh("&pass=".toCharArray(), desvariar(datoB)) ) );
+                param = appendCh("~".toCharArray(),  variar(p));
                 break;
 
             case OBTENERIMPRESORASLABEL:
@@ -350,22 +365,29 @@ public abstract class WebServiceCliente {
 
             case SALIDAADUANAS:
                 //Web service method = "SalidaAduanas";
-                int indx = datoC.indexOf(';'); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
-                if (indx<0) indx = 0;
-                parametros = "idUsuario=" + datoA + "&shipmentCode="+ datoB + "&idImpresora="+ datoC.substring(0,indx); // Tomar solo el codigo.
+                int indx = indexofArray( datoC, ';'); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
+                if (indx < 0) indx = 0;
+                char[] datoC_a = Arrays.copyOfRange(datoC, 0, indx);
+                parametros = "idUsuario=" + datoA + "&shipmentCode=" + datoB + "&idImpresora=" + datoC_a; // Tomar solo el codigo.
+                Arrays.fill(datoC_a, ' ');
+                param=parametros.toCharArray();
                 break;
 
             case IMPRIMIRIMAGENESGUIA:
                 //Web service method = "ImprimirImagenesGuia";
-                int ind = datoB.indexOf(';');
-                if (ind<0) ind = 0;
-                parametros = "ShipmentCode=" + datoA + "&IdImpresora="+ datoB.substring(0,ind); // Tomar solo el codigo.
+                int ind = indexofArray( datoB, ';') ;
+                if (ind < 0) ind = 0;
+                char[] datoB_a = Arrays.copyOfRange(datoC, 0, ind);
+                parametros = "ShipmentCode=" + datoA + "&IdImpresora=" + datoB_a; // Tomar solo el codigo.
+                Arrays.fill(datoB_a, ' ');
+                param = parametros.toCharArray();
+                break;
         }
 
-        return parametros;
+        return param;
     }
 
-    private static String getOper( int tipo ) {
+    private static String getOper(int tipo) {
         String metodo = "";
         switch (tipo) {
             case HELLOWORLD:
@@ -389,11 +411,12 @@ public abstract class WebServiceCliente {
                 break;
         }
 
-        return String.format("/%s",metodo);
+        return String.format("/%s", metodo);
     }
 
     /**
      * Procesa la respuesta XML del webservice
+     *
      * @param xmls respuesta del webservice
      * @return el dato contenido en el xml.
      */
@@ -450,25 +473,68 @@ public abstract class WebServiceCliente {
         return mensajeError;
     }
 
-    private static String variar(String s) {
+    private static char[] variar(String s) {
         char[] ori = s.toCharArray();
-        int l = ori.length;
+        return variar(ori);
+    }
+    private static char[] variar( char[] s) {
+
+        int l = s.length;
         char[] zif = new char[l];
 
-        for (int i=0; i<l; i++)
-            zif[i] = (char)( 126 - ( (int)ori[i] - 32) );
+        for (int i = 0; i < l; i++)
+            zif[i] = (char) (126 - ((int) s[i] - 32));
 
-        return new String(zif);
+        //Arrays.fill(ori, ' ');
+
+        return zif;
     }
 
-    private static String desvariar(String s) {
+    private static char[] desvariar(String s) {
         char[] ori = s.toCharArray();
-        int l = ori.length;
+        return desvariar(ori);
+    }
+
+    private static char[] desvariar(char[] s) {
+
+        int l = s.length;
         char[] zif = new char[l];
 
-        for (int i=0; i<l; i++)
-            zif[i] = (char)( 126 - (int)ori[i] + 32 );
+        for (int i = 0; i < l; i++)
+            if (s[i]==0)
+                zif[i]=' ';
+            else
+                zif[i] = (char) (126 - (int) s[i] + 32);
 
-        return new String(zif);
+        //Arrays.fill(s, ' ');
+
+        return zif;
+    }
+
+    private static byte[] toBytes(char[] chars) {
+        CharBuffer charBuffer = CharBuffer.wrap(chars);
+        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        byte[] bytes = Arrays.copyOfRange(byteBuffer.array(),
+                byteBuffer.position(), byteBuffer.limit());
+        Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
+        return bytes;
+    }
+
+    private static int indexofArray(char[] charArr, char chNeed) {
+
+        int found = IntStream.range(0, charArr.length)
+                .filter(i -> charArr[i] == chNeed)
+                .findFirst()
+                .orElse(-1);
+            return found;
+    }
+
+    private static char[] appendCh(char[] a, char[] b) {
+        int la = a.length;
+        int lb = b.length;
+        char[] ap = new char[la+lb];
+        for (int i=0; i<la; i++) ap[i] = a[i];
+        for (int i=0; i<lb; i++) ap[la+i] = b[i];
+        return ap;
     }
 }

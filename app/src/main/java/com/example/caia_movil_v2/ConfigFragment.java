@@ -37,7 +37,6 @@ public class ConfigFragment extends Fragment {
      */
     private static final String TAG = "DHL";
 
-    private static final int testSTATUS = 0;
     private static final int preSTATUS = 1001;
     private static final int codSTATUS = 1005;
     private static final int postSTATUS = 1010;
@@ -77,9 +76,6 @@ public class ConfigFragment extends Fragment {
             WebServiceCliente.getPreferences(getContext());
 
         Log.d(TAG, WebServiceCliente.getUrlS());
-
-        // Test handle operaciones
-        handleOperaciones(testSTATUS);
 
         webServiceText = binding.webservice;
         progBar = binding.loading;
@@ -156,11 +152,6 @@ public class ConfigFragment extends Fragment {
      * @param cod_inicio Codigo de operacion
      */
     private void handleOperaciones(int cod_inicio) {
-
-        if (cod_inicio == testSTATUS) {
-            Log.d(TAG, "ok");
-            return;
-        }
 
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
