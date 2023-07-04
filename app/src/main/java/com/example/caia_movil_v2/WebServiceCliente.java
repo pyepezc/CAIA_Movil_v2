@@ -19,7 +19,6 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.security.cert.CertPathValidatorException;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -151,7 +150,7 @@ public abstract class WebServiceCliente {
                     byte[] bb= toBytes(desvariar(mensajeS));
                     os.write( bb );
                 }
-            } else Log.e(TAG, "NULLLLL" );
+            }
 
             // El quinto paso: recibir la respuesta del servidor e imprimir
             int responseCode = connection.getResponseCode();
@@ -343,7 +342,7 @@ public abstract class WebServiceCliente {
      * @return el texto POST construido
      */
     private static char[] getXML(int tipo, char[] datoA, char[] datoB, char[] datoC) {
-        String parametros = "";
+        String parametros;
         char[] param=null;
 
         switch (tipo) {
@@ -368,7 +367,7 @@ public abstract class WebServiceCliente {
                 int indx = indexofArray( datoC, ';'); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
                 if (indx < 0) indx = 0;
                 char[] datoC_a = Arrays.copyOfRange(datoC, 0, indx);
-                parametros = "idUsuario=" + datoA + "&shipmentCode=" + datoB + "&idImpresora=" + datoC_a; // Tomar solo el codigo.
+                parametros = "idUsuario=" + (new String(datoA)) + "&shipmentCode=" + (new String(datoB)) + "&idImpresora=" + (new String(datoC_a)); // Tomar solo el codigo.
                 Arrays.fill(datoC_a, ' ');
                 param=parametros.toCharArray();
                 break;
@@ -377,8 +376,8 @@ public abstract class WebServiceCliente {
                 //Web service method = "ImprimirImagenesGuia";
                 int ind = indexofArray( datoB, ';') ;
                 if (ind < 0) ind = 0;
-                char[] datoB_a = Arrays.copyOfRange(datoC, 0, ind);
-                parametros = "ShipmentCode=" + datoA + "&IdImpresora=" + datoB_a; // Tomar solo el codigo.
+                char[] datoB_a = Arrays.copyOfRange(datoB, 0, ind);
+                parametros = "ShipmentCode=" + (new String(datoA)) + "&IdImpresora=" + (new String(datoB_a)); // Tomar solo el codigo.
                 Arrays.fill(datoB_a, ' ');
                 param = parametros.toCharArray();
                 break;
@@ -490,10 +489,10 @@ public abstract class WebServiceCliente {
         return zif;
     }
 
-    private static char[] desvariar(String s) {
-        char[] ori = s.toCharArray();
-        return desvariar(ori);
-    }
+    //private static char[] desvariar(String s) {
+    //    char[] ori = s.toCharArray();
+    //    return desvariar(ori);
+    //}
 
     private static char[] desvariar(char[] s) {
 
@@ -522,11 +521,10 @@ public abstract class WebServiceCliente {
 
     private static int indexofArray(char[] charArr, char chNeed) {
 
-        int found = IntStream.range(0, charArr.length)
+        return IntStream.range(0, charArr.length)
                 .filter(i -> charArr[i] == chNeed)
                 .findFirst()
                 .orElse(-1);
-            return found;
     }
 
     private static char[] appendCh(char[] a, char[] b) {

@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,7 @@ public class LoginFragment extends Fragment {
     /**
      * Constantes
      */
-    private static final String TAG = "DHL";
+    //private static final String TAG = "DHL";
     private static final int preLOGIN = 1001;
     private static final int codLOGIN = 1005;
     private static final int postLOGIN = 1010;
@@ -88,7 +87,7 @@ public class LoginFragment extends Fragment {
             password = passwordTxt.getText().toString().trim();
 
             if (! usuario.isEmpty())
-                handleOperaciones(preLOGIN);
+                handleOperaciones();
 
         });
 
@@ -117,7 +116,7 @@ public class LoginFragment extends Fragment {
         binding = null;
     }
 
-    private void handleOperaciones(int control) {
+    private void handleOperaciones() {
 
         mHandler = new Handler(Looper.getMainLooper()) {
             String respuesta=null;
