@@ -19,6 +19,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
@@ -497,16 +498,22 @@ public abstract class WebServiceCliente {
     private static char[] desvariar(char[] s) {
 
         int l = s.length;
-        char[] zif = new char[l];
+        //
+        ArrayList<Character> lst = new ArrayList<>();
 
-        for (int i = 0; i < l; i++)
-            if (s[i]==0)
-                zif[i]=' ';
-            else
-                zif[i] = (char) (126 - (int) s[i] + 32);
+        int i;
+        for (i = 0; i < l; i++)
+            if (s[i]!=0)
+                lst.add( (char) (126 - (int) s[i] + 32) );
 
         //Arrays.fill(s, ' ');
-
+        char[] zif = new char[ lst.size() ];
+        i=0;
+        for (Character c : lst) {
+            zif[i] = c;
+            i++;
+        }
+        //Log.d(TAG,new String(zif));
         return zif;
     }
 
