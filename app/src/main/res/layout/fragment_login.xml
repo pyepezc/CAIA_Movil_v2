@@ -151,11 +151,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"  />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

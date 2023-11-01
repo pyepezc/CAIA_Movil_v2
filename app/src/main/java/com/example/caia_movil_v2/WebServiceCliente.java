@@ -5,7 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+//import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -18,9 +18,12 @@ import java.io.StringReader;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.IntStream;
 
 
@@ -37,7 +40,7 @@ public abstract class WebServiceCliente {
     /**
      * Constantes
      */
-    private static final String TAG = "DHL";
+    //private static final String TAG = "DHL";
     private static final int HELLOWORLD = 1;
     private static final int LOGONUSER = 2;
     private static final int OBTENERIMPRESORASLABEL = 3;
@@ -45,7 +48,7 @@ public abstract class WebServiceCliente {
     private static final int IMPRIMIRIMAGENESGUIA = 5;
 
     private static final String NOMBREPREFERENCIAS = "CAIAPref";
-    private static final String URLDEFAULT = "https://";
+    private static final String URLDEFAULT = "https://ec-caia.dhl.com/";
 
     /**
      * Atributos
@@ -59,6 +62,8 @@ public abstract class WebServiceCliente {
     private static boolean respuestaflag;
     private static String respuesta;
     private static String mensajeError;
+
+    private static final HashMap<String, String> mensajeErrores = new HashMap<>();
 
     public static boolean hayRespuesta() {
         return respuestaflag;
@@ -75,9 +80,17 @@ public abstract class WebServiceCliente {
      *
      * @param u String con el url para crear el wsdl.
      */
+
     public static void setUrl(@NonNull String u) throws MalformedURLException {
-        urlS = u.trim();
-        //url = new URL(urlS);
+        List<String> valid = Arrays.asList("https://ec-caia.dhl.com/", "http://ec-caia.dhl.com/");
+        String urS = u.trim();
+        if ( valid.contains( urS.substring(0, Math.min(urS.length(), 24) ) ) ||
+                valid.contains( urS.substring(0, Math.min(urS.length(), 23) ) )
+            )
+            urlS = urS;
+        else {
+            throw new MalformedURLException();
+        }
     }
 
     public static String getUrlS() {
@@ -125,7 +138,6 @@ public abstract class WebServiceCliente {
         try {
             // Conexion URL
             URL url = new URL(getUrlS() + operacion);
-            setMensajeError(getUrlS() + operacion);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -134,11 +146,9 @@ public abstract class WebServiceCliente {
             connection.setDoOutput(true);
             connection.connect();
 
-            setMensajeError("Conectado.");
+            setMensajeError("Conectado");
 
             // El cuarto paso: organizar datosy enviar solicitud
-            if (mensajeS!=null && !operacion.contains("LogonUser"))
-                setMensajeError(new String(mensajeS) );
 
             /// Enviar la información en una secuencia
             os = connection.getOutputStream();
@@ -176,15 +186,15 @@ public abstract class WebServiceCliente {
             } else {
                 //Log.e(TAG, connection.getResponseMessage() );
                 respuestaflag = false;
-                setMensajeError(responseCode + connection.getResponseMessage());
+                setMensajeError(String.valueOf( responseCode )); // connection.getResponseMessage());
 
             }
             // Al final desconectar 30 mayo 2023
             connection.disconnect();
 
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-            setMensajeError(e.getMessage());
+            //Log.e(TAG, e.getMessage());
+            setMensajeError("IO");
 
         } finally {
             if (mensajeS!=null)
@@ -195,21 +205,21 @@ public abstract class WebServiceCliente {
                 try {
                     os.close();
                 } catch (IOException ioex) {
-                    Log.e(TAG, ioex.getMessage());
+                    //Log.e(TAG, ioex.getMessage());
                 }
             }
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException ioex) {
-                    Log.e(TAG, ioex.getMessage());
+                    //Log.e(TAG, ioex.getMessage());
                 }
             }
             if (inputRead != null) {
                 try {
                     inputRead.close();
                 } catch (IOException ioex) {
-                    Log.e(TAG, ioex.getMessage());
+                    //Log.e(TAG, ioex.getMessage());
                 }
             }
         }
@@ -253,7 +263,7 @@ public abstract class WebServiceCliente {
             setUrl(urls);
 
         } catch (MalformedURLException e) {
-            alerta(contexto.getString(R.string.error_url), e.getMessage(), contexto);
+            alerta(contexto.getString(R.string.error_url), " Url incorrecto ", contexto);
         }
         // in the EditTexts
         setImpresoraActual(prts);
@@ -352,10 +362,10 @@ public abstract class WebServiceCliente {
                 break;
 
             case LOGONUSER:
-                //Web service method = "LogonUser";
-                String p = new String( appendCh(
+                //Web service method = "LogonUser"; // No String
+                char [] p = appendCh(
                             appendCh( "user=".toCharArray(), desvariar(datoA)),
-                            appendCh("&pass=".toCharArray(), desvariar(datoB)) ) );
+                            appendCh("&pass=".toCharArray(), desvariar(datoB)) ) ;
                 param = appendCh("~".toCharArray(),  variar(p));
                 break;
 
@@ -365,7 +375,7 @@ public abstract class WebServiceCliente {
 
             case SALIDAADUANAS:
                 //Web service method = "SalidaAduanas";
-                int indx = indexofArray( datoC, ';'); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
+                int indx = indexofArray( datoC); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
                 if (indx < 0) indx = 0;
                 char[] datoC_a = Arrays.copyOfRange(datoC, 0, indx);
                 parametros = "idUsuario=" + (new String(datoA)) + "&shipmentCode=" + (new String(datoB)) + "&idImpresora=" + (new String(datoC_a)); // Tomar solo el codigo.
@@ -375,12 +385,17 @@ public abstract class WebServiceCliente {
 
             case IMPRIMIRIMAGENESGUIA:
                 //Web service method = "ImprimirImagenesGuia";
-                int ind = indexofArray( datoB, ';') ;
+
+                int ind = indexofArray( datoB) ;
                 if (ind < 0) ind = 0;
                 char[] datoB_a = Arrays.copyOfRange(datoB, 0, ind);
-                parametros = "ShipmentCode=" + (new String(datoA)) + "&IdImpresora=" + (new String(datoB_a)); // Tomar solo el codigo.
+                param = appendCh(
+                        appendCh( "ShipmentCode=".toCharArray(), datoA ) ,
+                        appendCh( "&IdImpresora=".toCharArray(), datoB_a )
+                    );
+                //parametros = "ShipmentCode=" + (new String(datoA)) + "&IdImpresora=" + (new String(datoB_a)); // Tomar solo el codigo.
                 Arrays.fill(datoB_a, ' ');
-                param = parametros.toCharArray();
+                //param = parametros.toCharArray();
                 break;
         }
 
@@ -440,7 +455,7 @@ public abstract class WebServiceCliente {
             }
 
         } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
+            setMensajeError("XML");
         }
         return texto;
     }
@@ -465,12 +480,25 @@ public abstract class WebServiceCliente {
     }
 
     public static void setMensajeError(String m) {
-        //mensajeError += m+" | ";
-        mensajeError = m; // Quitar para hacer pruebas
+        mensajeError = null;
+        mensajeError = mensajeErrores.get(m.trim());
+        //Log.d(TAG, "Text:["+m+"]("+mensajeError+")");
+        if (mensajeError==null)
+            mensajeError = "Error:"+m;
     }
 
     public static String getMensajeError() {
         return mensajeError;
+    }
+
+    public static void loadMensajes() {
+        mensajeErrores.put("", "   " );
+        mensajeErrores.put("unable", "No se puede resolver el servidor");
+        mensajeErrores.put("Conectado", "Conectado." );
+        mensajeErrores.put("IO", "Error conexion io." );
+        mensajeErrores.put("XML", "Error xml parsing." );
+        mensajeErrores.put("500", "codigo 500 error en el servidor." );
+        mensajeErrores.put("404", "codigo 404 no encontrado." );
     }
 
     private static char[] variar(String s) {
@@ -485,20 +513,13 @@ public abstract class WebServiceCliente {
         for (int i = 0; i < l; i++)
             zif[i] = (char) (126 - ((int) s[i] - 32));
 
-        //Arrays.fill(ori, ' ');
-
         return zif;
     }
-
-    //private static char[] desvariar(String s) {
-    //    char[] ori = s.toCharArray();
-    //    return desvariar(ori);
-    //}
 
     private static char[] desvariar(char[] s) {
 
         int l = s.length;
-        //
+
         ArrayList<Character> lst = new ArrayList<>();
 
         int i;
@@ -506,30 +527,30 @@ public abstract class WebServiceCliente {
             if (s[i]!=0)
                 lst.add( (char) (126 - (int) s[i] + 32) );
 
-        //Arrays.fill(s, ' ');
         char[] zif = new char[ lst.size() ];
         i=0;
         for (Character c : lst) {
             zif[i] = c;
             i++;
         }
-        //Log.d(TAG,new String(zif));
+
         return zif;
     }
 
     private static byte[] toBytes(char[] chars) {
         CharBuffer charBuffer = CharBuffer.wrap(chars);
-        ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        //ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+        ByteBuffer byteBuffer = StandardCharsets.UTF_8.encode(charBuffer);
         byte[] bytes = Arrays.copyOfRange(byteBuffer.array(),
                 byteBuffer.position(), byteBuffer.limit());
         Arrays.fill(byteBuffer.array(), (byte) 0); // clear sensitive data
         return bytes;
     }
 
-    private static int indexofArray(char[] charArr, char chNeed) {
+    private static int indexofArray(char[] charArr) {
 
         return IntStream.range(0, charArr.length)
-                .filter(i -> charArr[i] == chNeed)
+                .filter(i -> charArr[i] == ';')
                 .findFirst()
                 .orElse(-1);
     }
@@ -538,8 +559,9 @@ public abstract class WebServiceCliente {
         int la = a.length;
         int lb = b.length;
         char[] ap = new char[la+lb];
-        for (int i=0; i<la; i++) ap[i] = a[i];
-        for (int i=0; i<lb; i++) ap[la+i] = b[i];
+        System.arraycopy(a, 0, ap, 0, la);
+        System.arraycopy(b, 0, ap, la, lb);
+
         return ap;
     }
 }

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private AppBarConfiguration appBarConfiguration;
 
-    private static final String TAG = "DHL";
+    //private static final String TAG = "DHL";
 
     public Menu menuGlobal; // Para acceder desde Configfragment y guiaFragment.
 
@@ -48,11 +48,11 @@ public class MainActivity extends AppCompatActivity
 
         try {
             ProviderInstaller.installIfNeeded(this);
-            Log.d(TAG, "installIfNeeded ");
+            //Log.d(TAG, "installIfNeeded ");
         } catch (GooglePlayServicesRepairableException e) {
-            Log.d(TAG, "Repairable:"+e.getMessage());
+            //Log.d(TAG, "Repairable:"+e.getMessage());
         } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d(TAG, "NotAvailable:"+e.getMessage());
+            //Log.d(TAG, "NotAvailable:"+e.getMessage());
         }
 
         //ProviderInstaller.installIfNeededAsync(this, this);//Install Google service security provider
@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        WebServiceCliente.loadMensajes();
 
     }
 

@@ -37,6 +37,7 @@ public class GuiaFragment extends Fragment {
     /**
      * Constantes
      */
+    //private static final String TAG = "DHL";
 
     private static final int preSALIDA = 1001;
     private static final int codSALIDA = 1005;
@@ -237,11 +238,15 @@ public class GuiaFragment extends Fragment {
                         respuesta = WebServiceCliente.getRespuesta();
 
                         String texto = ((respuesta==null) ? "" : respuesta) + "\n";
-                        textMensaje.setText(texto); // Actualizar mensaje.
+                        int ind = texto.indexOf( "Caia");
+                        //ind = (ind<=0) ? texto.length() : ind;
+                        textMensaje.setText( texto.substring(0, ((ind<=0) ? texto.length() : ind)  ) ); // Actualizar mensaje.
+                        //Log.d(TAG, texto.substring(0, texto.indexOf( "Caia")) );
+
                     } else
                         respuesta = null;
 
-                    binding.textError.setText(WebServiceCliente.getMensajeError() );
+                    binding.textError.setText( WebServiceCliente.getMensajeError() );
 
                     mHandler.sendEmptyMessage(postSALIDA);  // Apagar progressbar
                 }
@@ -259,15 +264,20 @@ public class GuiaFragment extends Fragment {
 
                     if (WebServiceCliente.hayRespuesta()) {
                         //Log.d(TAG, WebServiceCliente.getRespuesta());
-                        WebServiceCliente.setMensajeError(WebServiceCliente.getRespuesta());
+                        //WebServiceCliente.setMensajeError( WebServiceCliente.getRespuesta() );
                         respuesta = WebServiceCliente.getRespuesta();
                     }
                     else
                         respuesta = null;
 
-                    String texto = textMensaje.getText() + ((respuesta==null) ? "" : respuesta);
-                    textMensaje.setText(texto); // Actualizar mensaje.
-                    binding.textError.setText(WebServiceCliente.getMensajeError());
+                    String texto = ((respuesta==null) ? "" : respuesta) + "\n";
+                    int ind = texto.indexOf( "Caia");
+                    //ind = (ind<=0) ? texto.length() : ind;
+                    textMensaje.setText( texto.substring(0,  ((ind<=0) ? texto.length() : ind) ) ); // Actualizar mensaje.
+
+                    //String texto = textMensaje.getText() + ((respuesta==null) ? "" : respuesta);
+                    //textMensaje.setText(texto); // Actualizar mensaje.
+                    binding.textError.setText( WebServiceCliente.getMensajeError() );
 
                     mHandler.sendEmptyMessage(postIMPRESION);  // Apagar progressbar
                 }

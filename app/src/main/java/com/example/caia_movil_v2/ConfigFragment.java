@@ -12,11 +12,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+//import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -35,7 +35,7 @@ public class ConfigFragment extends Fragment {
     /**
      * Constantes
      */
-    private static final String TAG = "DHL";
+    //private static final String TAG = "DHL";
 
     private static final int preSTATUS = 1001;
     private static final int codSTATUS = 1005;
@@ -75,16 +75,11 @@ public class ConfigFragment extends Fragment {
         if (getContext()!=null)
             WebServiceCliente.getPreferences(getContext());
 
-        Log.d(TAG, WebServiceCliente.getUrlS());
+
 
         webServiceText = binding.webservice;
         progBar = binding.loading;
         spinPrt = binding.spinImpresoras;
-        //textError = binding.textError;
-
-        WebView webview = binding.webview;
-
-        webview.loadUrl(WebServiceCliente.getUrlS());
 
         webServiceText.setText(WebServiceCliente.getUrlS());
         cargarImpresoras( WebServiceCliente.getImpresoraActual() );
@@ -96,7 +91,7 @@ public class ConfigFragment extends Fragment {
                                        int position, long id) {
                 Object item = adapterView.getItemAtPosition(position);
                 if (item != null) {
-                    Log.e(TAG, item.toString() );
+                    //Log.e(TAG, item.toString() );
                     WebServiceCliente.setImpresoraActual(item.toString());
                 }
             }
@@ -109,14 +104,14 @@ public class ConfigFragment extends Fragment {
         });
 
         binding.buttonTest.setOnClickListener(v -> {
-            String urlS = webServiceText.getText().toString();
 
             try {
-                WebServiceCliente.setUrl(urlS);
+                WebServiceCliente.setUrl( webServiceText.getText().toString() );
                 WebServiceCliente.savePreferences(getContext());
 
             } catch (MalformedURLException e) {
                 //Log.e(TAG, urlS);
+                binding.textError.setText("Url incorrecto.");
                 return; // No es correcto el url
             }
 
@@ -180,7 +175,8 @@ public class ConfigFragment extends Fragment {
 
                     if (WebServiceCliente.hayRespuesta()) {
                         binding.textTest.setText(WebServiceCliente.getRespuesta());
-                        binding.textError.setText(WebServiceCliente.getMensajeError());
+                        //Log.d(TAG, "ya");
+                        binding.textError.setText( WebServiceCliente.getMensajeError() );
                     }
                     else {
                         binding.textTest.setText(R.string.ws_no_responde);

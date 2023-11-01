@@ -15,7 +15,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -77,9 +77,6 @@ public class LoginFragment extends Fragment {
         progBar = binding.loading;
         usuarioTxt = binding.username;
         passwordTxt = binding.password;
-        WebView webview = binding.webview;
-
-        webview.loadUrl(WebServiceCliente.getUrlS());
 
         binding.buttonLogin.setOnClickListener(viewE -> {
 
@@ -148,7 +145,7 @@ public class LoginFragment extends Fragment {
                     }
                     else
                         respuesta = null;
-                    binding.textError.setText(WebServiceCliente.getMensajeError());
+                    binding.textError.setText( WebServiceCliente.getMensajeError() );
 
                     mHandler.sendEmptyMessage(postLOGIN);  // Apagar progressbar
                 }
