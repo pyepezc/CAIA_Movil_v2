@@ -82,7 +82,7 @@ public abstract class WebServiceCliente {
      */
 
     public static void setUrl(@NonNull String u) throws MalformedURLException {
-        List<String> valid = Arrays.asList("https://ec-caia.dhl.com/", "http://ec-caia.dhl.com/");
+        List<String> valid = Arrays.asList("https://ec-caia.dhl.com/");
         String urS = u.trim();
         if ( valid.contains( urS.substring(0, Math.min(urS.length(), 24) ) ) ||
                 valid.contains( urS.substring(0, Math.min(urS.length(), 23) ) )
