@@ -110,7 +110,6 @@ public class ConfigFragment extends Fragment {
                 WebServiceCliente.savePreferences(getContext());
 
             } catch (MalformedURLException e) {
-                //Log.e(TAG, urlS);
                 binding.textError.setText("Url incorrecto.");
                 return; // No es correcto el url
             }

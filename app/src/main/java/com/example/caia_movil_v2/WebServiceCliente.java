@@ -82,6 +82,7 @@ public abstract class WebServiceCliente {
      */
 
     public static void setUrl(@NonNull String u) throws MalformedURLException {
+        // Validate. MUST START WITH https://ec-caia.dhl.com/
         List<String> valid = Arrays.asList("https://ec-caia.dhl.com/");
         String urS = u.trim();
         if ( valid.contains( urS.substring(0, Math.min(urS.length(), 24) ) ) ||
@@ -91,6 +92,16 @@ public abstract class WebServiceCliente {
         else {
             throw new MalformedURLException();
         }
+    }
+
+    public static String ValidateUrl(String u) throws MalformedURLException {
+        // Validate. MUST START WITH https://ec-caia.dhl.com/
+        List<String> valid = Arrays.asList("https://ec-caia.dhl.com/");
+        String urS = u.trim();
+        if ( valid.contains( urS.substring(0, Math.min(urS.length(), 24) ) ) )
+            return urS;
+        else
+            throw new MalformedURLException();
     }
 
     public static String getUrlS() {
@@ -137,7 +148,7 @@ public abstract class WebServiceCliente {
 
         try {
             // Conexion URL
-            URL url = new URL(getUrlS() + operacion);
+            URL url = new URL(ValidateUrl( getUrlS()) + operacion);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
@@ -206,6 +217,7 @@ public abstract class WebServiceCliente {
                     os.close();
                 } catch (IOException ioex) {
                     //Log.e(TAG, ioex.getMessage());
+                    setMensajeError("IO os error!");
                 }
             }
             if (reader != null) {
@@ -213,6 +225,7 @@ public abstract class WebServiceCliente {
                     reader.close();
                 } catch (IOException ioex) {
                     //Log.e(TAG, ioex.getMessage());
+                    setMensajeError("IO reader error!");
                 }
             }
             if (inputRead != null) {
@@ -220,6 +233,7 @@ public abstract class WebServiceCliente {
                     inputRead.close();
                 } catch (IOException ioex) {
                     //Log.e(TAG, ioex.getMessage());
+                    setMensajeError("IO inputRead error!");
                 }
             }
         }
@@ -353,7 +367,7 @@ public abstract class WebServiceCliente {
      * @return el texto POST construido
      */
     private static char[] getXML(int tipo, char[] datoA, char[] datoB, char[] datoC) {
-        String parametros;
+        //String parametros;
         char[] param=null;
 
         switch (tipo) {
@@ -378,9 +392,17 @@ public abstract class WebServiceCliente {
                 int indx = indexofArray( datoC); //"15;HPimpresora|25;CannonImpresora|20;OP-COURIER_RICOH MP30|23;LaserGrande"
                 if (indx < 0) indx = 0;
                 char[] datoC_a = Arrays.copyOfRange(datoC, 0, indx);
-                parametros = "idUsuario=" + (new String(datoA)) + "&shipmentCode=" + (new String(datoB)) + "&idImpresora=" + (new String(datoC_a)); // Tomar solo el codigo.
+                // parametros = "idUsuario=" + (new String(datoA)) + "&shipmentCode=" + (new String(datoB)) + "&idImpresora=" + (new String(datoC_a)); // Tomar solo el codigo.
+                char [] tmp = appendCh(
+                        appendCh( "idUsuario=".toCharArray(), datoA ) ,
+                        appendCh( "&shipmentCode=".toCharArray(), datoB )
+                );
+                param = appendCh( tmp,
+                        appendCh( "&idImpresora=".toCharArray(), datoC_a )
+                );
+
                 Arrays.fill(datoC_a, ' ');
-                param=parametros.toCharArray();
+                //param=parametros.toCharArray();
                 break;
 
             case IMPRIMIRIMAGENESGUIA:
@@ -499,6 +521,8 @@ public abstract class WebServiceCliente {
         mensajeErrores.put("XML", "Error xml parsing." );
         mensajeErrores.put("500", "codigo 500 error en el servidor." );
         mensajeErrores.put("404", "codigo 404 no encontrado." );
+        mensajeErrores.put("REP","Error Repairable GooglePlayServices");
+        mensajeErrores.put("NOA","Error NotAvailable GooglePlayServices");
     }
 
     private static char[] variar(String s) {

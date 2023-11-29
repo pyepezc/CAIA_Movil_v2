@@ -25,6 +25,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
 import android.view.Menu;
@@ -51,8 +52,10 @@ public class MainActivity extends AppCompatActivity
             //Log.d(TAG, "installIfNeeded ");
         } catch (GooglePlayServicesRepairableException e) {
             //Log.d(TAG, "Repairable:"+e.getMessage());
+            WebServiceCliente.setMensajeError("REP");
         } catch (GooglePlayServicesNotAvailableException e) {
             //Log.d(TAG, "NotAvailable:"+e.getMessage());
+            WebServiceCliente.setMensajeError("NOA");
         }
 
         //ProviderInstaller.installIfNeededAsync(this, this);//Install Google service security provider
